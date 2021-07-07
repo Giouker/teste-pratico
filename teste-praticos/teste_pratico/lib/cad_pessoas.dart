@@ -65,7 +65,7 @@ class _CadPessoasState extends State<CadPessoas> {
                     key: _keyNome,
                     child: TextFormField(
                         onFieldSubmitted: (_) {
-                          //deixa todas as letras do nome da em maiúsculo
+                          //deixa todas as letras do nome em maiúsculo
                           nome.text = nome.text.toUpperCase();
                         },
                         validator: (value) =>
