@@ -23,16 +23,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^2.0.6
-  sqflite: any
   intl: ^0.17.0
+  sqflite: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
- 
 
-scripts:
-  mobx: flutter pub run build_runner build --delete-conflicting-outputs
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 # The following section is specific to Flutter.

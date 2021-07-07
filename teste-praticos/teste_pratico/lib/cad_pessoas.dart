@@ -23,14 +23,21 @@ class _CadPessoasState extends State<CadPessoas> {
   var _sexos = ['Masculino', 'Feminino', 'Indiferente'];
   var _sexoSelecionado = 'Masculino';
   final df = new DateFormat('dd/MM/yyyy');
-  double datacerta;
+  double idadeFormatada;
+  var upper;
   DateTime data = DateTime.now();
   final GlobalKey<FormState> _keyNome = GlobalKey<FormState>();
   final GlobalKey<FormState> _keyData = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+    //valida se for um update recebe os dados do respectivo registro
+    //nos campos da tela de cadastro
     if (widget.codigo != 0) {
-      nome.text = widget.editNome;
+      if (nome.text != '') {
+      } else {
+        nome.text = widget.editNome;
+      }
+
       date.text = widget.editData;
     }
 
@@ -57,6 +64,10 @@ class _CadPessoasState extends State<CadPessoas> {
                   child: Form(
                     key: _keyNome,
                     child: TextFormField(
+                        onFieldSubmitted: (_) {
+                          //deixa todas as letras do nome da em maiúsculo
+                          nome.text = nome.text.toUpperCase();
+                        },
                         validator: (value) =>
                             value.isEmpty ? 'Campo requerido' : null,
                         controller: nome,
@@ -83,15 +94,14 @@ class _CadPessoasState extends State<CadPessoas> {
                           lastDate: DateTime.now(),
                         ).then((date) {
                           setState(() {
+                            //converte a data de aniversario em anos para gerar a idade da pessoa
                             data = date;
                             idade.text = df
                                 .format(DateTime.fromMillisecondsSinceEpoch(
                                     data.millisecondsSinceEpoch))
                                 .toString();
                             var anos = DateTime.now().difference(data).inDays;
-                            datacerta = (anos / 365).truncateToDouble();
-
-                            print(datacerta);
+                            idadeFormatada = (anos / 365).truncateToDouble();
                           });
                         });
                       },
@@ -138,29 +148,41 @@ class _CadPessoasState extends State<CadPessoas> {
                             child: FlatButton(
                                 onPressed: () async {
                                   Pessoas listaP = Pessoas();
+                                  //valida os campos preenchidos
                                   if (!_keyNome.currentState.validate() ||
                                       !_keyData.currentState.validate()) {
                                   } else {
+                                    //verifica se algum campo foi alterado caso não tenha sido
+                                    //apenas fecha a tela
                                     if (widget.editNome == nome.text &&
-                                        datacerta == null) {
+                                        idadeFormatada == null &&
+                                        widget.editSexo == _sexoSelecionado) {
                                       Navigator.pop(context);
                                       Navigator.of(context).pushReplacement(
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   ListPessoas()));
                                     } else {
+                                      //verifica se é um novo registro ou esta editando um registro ja
+                                      //existente
                                       if (widget.codigo != 0) {
                                         await listaP.update({
                                           'nome': nome.text,
                                           'sexo': _sexoSelecionado,
-                                          'idade': datacerta.toInt(),
-                                          'data': idade.text,
+                                          'idade': idadeFormatada != null
+                                              ? idadeFormatada.toInt()
+                                              : widget.idade,
+                                          'data': idade.text != ''
+                                              ? idade.text
+                                              : widget.editData,
                                         }, widget.codigo);
                                       } else {
                                         await listaP.insert({
                                           'nome': nome.text,
                                           'sexo': _sexoSelecionado,
-                                          'idade': datacerta.toInt(),
+                                          'idade': idadeFormatada != null
+                                              ? idadeFormatada.toInt()
+                                              : widget.idade,
                                           'data': idade.text,
                                         });
                                       }

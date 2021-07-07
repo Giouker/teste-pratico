@@ -66,6 +66,8 @@ class _ListPessoasState extends State<ListPessoas> {
                       return FlatButton(
                         onPressed: () {
                           showAlertDialog(context);
+                          //guarda os dados da pessoa para não haver necessidade de buscar novamente os dados
+                          //do banco na tela de cadastro caso o usuario deseje editar o registro
                           _edtiNome = pessoa['nome'];
                           _editSexo = pessoa['sexo'];
                           _idade = pessoa['idade'];
